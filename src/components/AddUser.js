@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { GlobalContext } from "../context/GlobalState";
 import { nanoid } from 'nanoid';
 import { Link, useHistory } from "react-router-dom";
@@ -15,14 +15,37 @@ export const AddUser = () => {
   const [weight, setWeight] = useState('')
   const { addUser } = useContext(GlobalContext);
   // const { addUserName } = useContext(GlobalContext)
+  const [bmi, setBmi] = useState({});
   const history = useHistory();
+
+  
+  useEffect(() => {
+    console.log(bmi)
+      
+      let requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          height : height,
+          weight : weight
+        }),
+      };    
+
+      
+      // fetch('http://localhost:9000/bmi', requestOptions)
+      fetch('https://api-bmi-r.herokuapp.com/bmi', requestOptions)
+        .then(res => res.json())
+        .then(data => setBmi(data))
+
+  }, [height, weight]);
 
   const onSubmit = (e) => {
     e.preventDefault();
     const newUser = {
       id: nanoid(),
       height,
-      weight
+      weight,
+      bmi
     }
     addUser(newUser);
     // addUserName(newUser);
@@ -45,9 +68,13 @@ export const AddUser = () => {
 
         <Label>Input Weight</Label>
         <Input type="text" value={weight} onChange={onChange2} name="name" placeholder="Weight" required></Input>
-
+        
+        <Label>BMI</Label>
+        <Input type="text" value={ bmi.bmi != null ? "("+bmi.bmi+")"+ bmi.statusBmi : ''}  placeholder="Weight" required></Input>
       </FormGroup>
+      
       <Button type="submit">Submit</Button>
+
       <Link to="/" className="btn btn-danger ml-2">Cancel</Link>
     </Form>
   )
