@@ -37,7 +37,7 @@ export const AddUser = () => {
         .then(res => res.json())
         .then(data => setBmi(data))
 
-  }, [height, weight]);
+  }, );
 
   const onSubmit = (e) => {
     e.preventDefault();
